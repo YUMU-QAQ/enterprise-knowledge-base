@@ -1,0 +1,72 @@
+/* 企业知识库 — 全局样式 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+/* AI 对话面板 */
+.ai-chat-panel {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.ai-chat-float-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ai-chat-window {
+  width: 400px;
+  height: 560px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* 搜索页高亮 */
+.search-highlight {
+  color: #1677ff;
+  font-weight: 500;
+  background: #e6f4ff;
+  padding: 0 2px;
+}
+
+/* 文档卡片 */
+.doc-card {
+  transition: box-shadow 0.3s;
+}
+.doc-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-vite@latest frontend --template react-ts)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git -C \"E:\\\\AI项目\\\\企业知识库\" status)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(git *)",
+      "Bash(winget install *)",
+      "Bash(scoop install *)",
+      "Bash(curl -fsSL https://github.com/cli/cli/releases/latest/download/gh_2.50.0_windows_amd64.zip -o /tmp/gh.zip)",
+      "Bash(unzip -o /tmp/gh.zip -d /tmp/gh_install)"
+    ]
+  }
+}
