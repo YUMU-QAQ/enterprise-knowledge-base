@@ -29,15 +29,21 @@ async def _index_document_async(doc_id: int, content_md: str):
     text_to_embed = " ".join(chunks[:3])[:2000]
     try:
         embedding = await embed_text(text_to_embed)
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Embedding generation failed for doc {doc_id}: {e}")
         return
 
     # 2. Store embedding in DB
-    async with async_session() as db:
-        await db.execute(
-            update(Document).where(Document.id == doc_id).values(embedding=embedding)
-        )
-        await db.commit()
+    try:
+        async with async_session() as db:
+            await db.execute(
+                update(Document).where(Document.id == doc_id).values(embedding=embedding)
+            )
+            await db.commit()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Embedding DB write failed for doc {doc_id}: {e}")
 
     # 3. Index in Elasticsearch
     try:
@@ -45,11 +51,15 @@ async def _index_document_async(doc_id: int, content_md: str):
         svc = SearchService()
         await svc.index_document({
             "id": doc_id,
-            "title": "",
+            "title": title,
             "content": content_md,
-            "summary_text": "",
+            "summary_text": content_md[:500],
             "tags": [],
             "status": "published",
+            "created_at": str(datetime.now(timezone.utc)),
+            "updated_at": str(datetime.now(timezone.utc)),
+            "category_id": category_id,
+            "view_count": 0,
         })
     except Exception:
         pass

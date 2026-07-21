@@ -29,7 +29,7 @@ async def _rebuild_es_index():
                 "id": doc.id,
                 "title": doc.title,
                 "content": doc.content_md or "",
-                "summary_text": doc.summary_text or "",
+                "summary_text": doc.summary_text or (doc.content_md[:500] if doc.content_md else ""),
                 "category_id": doc.category_id,
                 "category_name": doc.category.name if doc.category else "",
                 "author_name": doc.author.display_name if doc.author else "",

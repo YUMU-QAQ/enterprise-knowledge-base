@@ -60,3 +60,5 @@ minio-data/
 
 # ES data
 es-data/
+*.docx
+*.pdf

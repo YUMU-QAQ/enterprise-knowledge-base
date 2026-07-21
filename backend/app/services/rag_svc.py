@@ -119,7 +119,9 @@ class RAGService:
             # Use SQLAlchemy's cast + array syntax for pgvector compatibility
             vec_str = "[" + ",".join(str(v) for v in vector) + "]"
             query = text("""
-                SELECT d.id, d.title, d.summary_text, d.category_id,
+                SELECT d.id, d.title,
+                       COALESCE(d.summary_text, d.content_md, d.content, '') AS display_content,
+                       d.category_id,
                        d.view_count, d.created_at, d.updated_at,
                        1 - (d.embedding <=> cast(:vec as vector)) AS similarity
                 FROM documents d
@@ -158,7 +160,7 @@ class RAGService:
                 {
                     "id": item["id"],
                     "title": item["title"],
-                    "content": item.get("summary_text", ""),
+                    "content": item.get("summary_text") or "",
                     "keyword_score": item.get("score", 0),
                 }
                 for item in items

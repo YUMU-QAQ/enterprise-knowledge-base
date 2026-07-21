@@ -63,7 +63,7 @@ class Settings(BaseSettings):
     # ── Embedding ──
     EMBEDDING_MODEL: str = "BAAI/bge-m3"
     EMBEDDING_DEVICE: str = "cpu"
-    EMBEDDING_DIM: int = 768
+    EMBEDDING_DIM: int = 1024
     EMBEDDING_BATCH_SIZE: int = 32
 
     # ── Reranker ──
