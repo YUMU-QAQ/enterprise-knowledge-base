@@ -1,20 +1,20 @@
-"""Alembic 迁移环境配置"""
+"""Alembic migration environment config"""
 
 import asyncio
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.core.config import settings
 from app.core.database import Base
 
-# 导入所有模型，确保被 Base.metadata 注册
+# Import all models so Base.metadata is populated
 from app.models import *  # noqa: F401, F403
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL_SYNC)
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -23,7 +23,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
-    """离线迁移（生成 SQL 脚本）"""
+    """Offline migration (generate SQL script)"""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -42,11 +42,9 @@ def do_run_migrations(connection):
 
 
 async def run_async_migrations() -> None:
-    """在线迁移（直接执行到 DB）"""
-    configuration = config.get_section(config.config_ini_section, {})
-    connectable = async_engine_from_config(
-        configuration,
-        prefix="sqlalchemy.",
+    """Online migration (run against live DB)"""
+    connectable = create_async_engine(
+        settings.DATABASE_URL,
         poolclass=pool.NullPool,
     )
     async with connectable.connect() as connection:
@@ -55,7 +53,7 @@ async def run_async_migrations() -> None:
 
 
 def run_migrations_online() -> None:
-    """在线迁移"""
+    """Online migration"""
     asyncio.run(run_async_migrations())
 
 

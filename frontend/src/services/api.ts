@@ -31,6 +31,11 @@ api.interceptors.response.use(
       useAuthStore.getState().logout();
       window.location.href = "/login";
     }
+    // Normalize FastAPI HTTPException format to {code, message}
+    const detail = error.response?.data?.detail;
+    if (detail) {
+      return Promise.reject(detail);
+    }
     return Promise.reject(error.response?.data || error);
   }
 );

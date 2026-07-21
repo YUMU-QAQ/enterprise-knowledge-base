@@ -1,4 +1,4 @@
-"""Embedding 服务 — 文档向量化"""
+"""Embedding service — text vectorization"""
 
 import threading
 from app.core.config import settings

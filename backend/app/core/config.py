@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     # ── 数据库 ──
     DATABASE_URL: str = "postgresql+asyncpg://kb_user:changeme@localhost:5432/knowledge_base"
     DATABASE_URL_SYNC: str = "postgresql://kb_user:changeme@localhost:5432/knowledge_base"
+    DB_PASSWORD: str = "changeme"
 
     # ── Redis ──
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -79,7 +80,7 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.CORS_ORIGINS.split(",")]
 
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
         env_file_encoding = "utf-8"
 
 

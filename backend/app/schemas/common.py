@@ -29,8 +29,8 @@ class APIResponse(BaseModel, Generic[T]):
     pagination: PaginationMeta | None = None
 
     @classmethod
-    def ok(cls, data: T = None, pagination: PaginationMeta | None = None) -> "APIResponse[T]":
-        return cls(code=0, message="success", data=data, pagination=pagination)
+    def ok(cls, data: T = None, pagination: PaginationMeta | None = None, message: str = "success") -> "APIResponse[T]":
+        return cls(code=0, message=message, data=data, pagination=pagination)
 
     @classmethod
     def error(cls, code: int, message: str) -> "APIResponse":

@@ -102,7 +102,17 @@ export default function DocumentPage() {
 
         <div className="doc-content" style={{ lineHeight: 1.8, fontSize: 15 }}>
           {doc.content_md ? (
-            <Paragraph style={{ whiteSpace: "pre-wrap" }}>{doc.content_md}</Paragraph>
+            <pre style={{
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+              fontFamily: "inherit",
+              fontSize: "inherit",
+              lineHeight: "inherit",
+              margin: 0,
+              border: "none",
+              background: "transparent",
+              padding: 0,
+            }}>{doc.content_md}</pre>
           ) : doc.content ? (
             <div dangerouslySetInnerHTML={{ __html: doc.content }} />
           ) : (

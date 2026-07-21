@@ -1,37 +1,36 @@
-"""Reranker 服务 — 召回后精排"""
+"""Reranker service — retrieval result re-ranking"""
 
-import threading
 from app.core.config import settings
 
 _reranker_model = None
-_model_lock = threading.Lock()
+_reranker_loaded = False
 
 
 def get_reranker():
-    """获取 Reranker 模型（单例）
+    """Get Reranker model (singleton).
 
-    加载 BGE-Reranker 用于召回结果精排。
-    CPU 环境返回 None，跳过精排阶段。
+    Loads BGE-Reranker for retrieval result re-ranking.
+    On CPU or when loading fails, returns None to skip re-ranking.
     """
-    global _reranker_model
+    global _reranker_model, _reranker_loaded
 
-    if _reranker_model is not None:
-        return _reranker_model
+    if _reranker_loaded:
+        return _reranker_model if _reranker_model is not False else None
 
-    with _model_lock:
-        if _reranker_model is not None:
-            return _reranker_model
+    _reranker_loaded = True
 
-        try:
-            from sentence_transformers import CrossEncoder
-            _reranker_model = CrossEncoder(
-                settings.RERANKER_MODEL,
-                device=settings.RERANKER_DEVICE,
-            )
-        except Exception:
-            _reranker_model = None  # 不可用时跳过
+    try:
+        from sentence_transformers import CrossEncoder
+        _reranker_model = CrossEncoder(
+            settings.RERANKER_MODEL,
+            device=settings.RERANKER_DEVICE,
+        )
+    except Exception:
+        _reranker_model = False
 
-        return _reranker_model
+    if _reranker_model is False:
+        return None
+    return _reranker_model
 
 
 async def rerank(query: str, documents: list[dict], top_k: int | None = None) -> list[dict]:

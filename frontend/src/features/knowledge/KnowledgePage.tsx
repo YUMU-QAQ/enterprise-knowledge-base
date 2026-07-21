@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Card, List, Tag, Typography, Space, Skeleton, Tree, Empty, Input } from "antd";
+import { Row, Col, Card, List, Tag, Typography, Space, Skeleton, Tree, Empty, Input, Button } from "antd";
 import {
   FileTextOutlined,
   EyeOutlined,
   LikeOutlined,
   FolderOutlined,
+  PlusOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { documentsAPI, categoriesAPI } from "../../services/endpoints";
 import type { DocumentItem, Category } from "../../types";
+import DocCreateModal from "../../components/DocCreateModal";
+import UploadModal from "../../components/UploadModal";
 
 const { Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -20,6 +24,8 @@ export default function KnowledgePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCat, setSelectedCat] = useState<number | undefined>();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,7 +100,15 @@ export default function KnowledgePage() {
         <Card
           title="📄 文档列表"
           extra={
-            <Search placeholder="搜索文档..." onSearch={(q) => navigate(`/search?q=${q}`)} style={{ width: 250 }} />
+            <Space>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>
+                新建文档
+              </Button>
+              <Button icon={<UploadOutlined />} onClick={() => setUploadOpen(true)}>
+                上传文件
+              </Button>
+              <Search placeholder="搜索文档..." onSearch={(q) => navigate(`/search?q=${q}`)} style={{ width: 250 }} />
+            </Space>
           }
         >
           {loading ? (
@@ -146,6 +160,17 @@ export default function KnowledgePage() {
           )}
         </Card>
       </Col>
+      {/* 创建文档弹窗 */}
+      <DocCreateModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={loadDocuments}
+      />
+      <UploadModal
+        open={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        onUploaded={loadDocuments}
+      />
     </Row>
   );
 }

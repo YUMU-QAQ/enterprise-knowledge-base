@@ -13,6 +13,7 @@ from app.api.v1.tags import router as tags_router
 from app.api.v1.admin import router as admin_router
 from app.api.v1.webhooks import router as webhooks_router
 from app.api.v1.stats import router as stats_router
+from app.api.v1.upload import router as upload_router
 
 router = APIRouter()
 
@@ -27,3 +28,4 @@ router.include_router(tags_router, prefix="/tags", tags=["Tags"])
 router.include_router(admin_router, prefix="/admin", tags=["Admin"])
 router.include_router(webhooks_router, prefix="/webhooks", tags=["Webhooks"])
 router.include_router(stats_router, prefix="/stats", tags=["Stats"])
+router.include_router(upload_router, prefix="/upload", tags=["Upload"])

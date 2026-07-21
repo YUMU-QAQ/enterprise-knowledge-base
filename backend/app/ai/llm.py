@@ -1,19 +1,17 @@
-"""LLM 调用封装 — 支持 OpenAI 兼容接口（GPT-4o / Qwen3 / DeepSeek 等）"""
+"""LLM Client — OpenAI-compatible API (DeepSeek, GPT-4o, Qwen3, etc.)"""
+
+from openai import AsyncOpenAI
 
 from app.core.config import settings
 
-_llm_instance = None
+_llm_instance: AsyncOpenAI | None = None
 
 
-def get_llm():
-    """获取 LLM 客户端（单例）"""
+def get_llm() -> AsyncOpenAI:
+    """Get LLM client (singleton)"""
     global _llm_instance
-
     if _llm_instance is not None:
         return _llm_instance
-
-    from openai import AsyncOpenAI
-
     _llm_instance = AsyncOpenAI(
         base_url=settings.LLM_BASE_URL,
         api_key=settings.LLM_API_KEY,
@@ -28,59 +26,21 @@ async def llm_chat(
     max_tokens: int | None = None,
     stream: bool = False,
 ):
-    """通用 LLM 调用
+    """Generic LLM call
 
     Args:
-        messages: 对话消息列表 [{"role": "system/user/assistant", "content": "..."}]
-        model: 模型名称，默认使用配置
-        temperature: 温度参数
-        max_tokens: 最大 token 数
-        stream: 是否流式返回
+        messages: [{"role": "system/user/assistant", "content": "..."}]
+        model: model name, defaults to settings
+        temperature: temperature, defaults to settings
+        max_tokens: max tokens, defaults to settings
+        stream: enable streaming
     """
     client = get_llm()
 
-    if model is None:
-        model = settings.LLM_MODEL
-    if temperature is None:
-        temperature = settings.LLM_TEMPERATURE
-    if max_tokens is None:
-        max_tokens = settings.LLM_MAX_TOKENS
-
-    response = await client.chat.completions.create(
-        model=model,
+    return await client.chat.completions.create(
+        model=model or settings.LLM_MODEL,
         messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
+        temperature=temperature if temperature is not None else settings.LLM_TEMPERATURE,
+        max_tokens=max_tokens if max_tokens is not None else settings.LLM_MAX_TOKENS,
         stream=stream,
     )
-
-    if stream:
-        return response  # 返回流对象，调用方需要 async for
-
-    return response.choices[0].message.content
-
-
-class LLMClient:
-    """同步风格 LLM 客户端封装"""
-
-    async def ainvoke(self, prompt: str, system_prompt: str | None = None) -> str:
-        """单轮调用，返回完整回答"""
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-
-        return await llm_chat(messages)
-
-    async def astream(self, prompt: str, system_prompt: str | None = None):
-        """流式调用"""
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-
-        stream = await llm_chat(messages, stream=True)
-        async for chunk in stream:
-            content = chunk.choices[0].delta.content
-            if content:
-                yield content

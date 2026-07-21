@@ -223,6 +223,8 @@ async def get_document(
     # 增加阅读计数
     doc.view_count += 1
     await db.flush()
+    # Refresh to re-populate expired attributes after flush
+    await db.refresh(doc)
 
     return APIResponse.ok(DocumentResponse(**(await _doc_to_response(doc))))
 
